@@ -9,12 +9,12 @@ A minimal custom VPN implementation in Python using TUN/TAP interfaces and TLS o
 1. [Project Overview](#project-overview)  
 2. [Prerequisites](#prerequisites)  
 3. [TLS Certificate Generation](#tls-certificate-generation)  
-4. [Folder Structure](#folder-structure)  
-5. [Server Setup & Execution](#server-setup--execution)  
-6. [Client Setup & Execution](#client-setup--execution)  
-7. [Networking & Routing Configuration](#networking--routing-configuration)  
-8. [Testing & Verification](#testing--verification)  
-9. [Cleanup](#cleanup)  
+4. [Server Setup & Execution](#server-setup--execution)  
+5. [Client Setup & Execution](#client-setup--execution)  
+6. [Networking & Routing Configuration](#networking--routing-configuration)  
+7. [Testing & Verification](#testing--verification)  
+8. [Cleanup](#cleanup)  
+
 
 ---
 
@@ -119,34 +119,6 @@ Create a self-signed certificate for the server. The client can either disable v
    * **`server.crt`** → Self-signed certificate.
 
 3. **Copy `server.crt` to the client machine** (if you want to verify the server’s certificate). For quick testing, you may set `CLIENT_VERIFY = False` in `client.py` to disable verification.
-
----
-
-## Folder Structure
-
-Below is the recommended project layout. Adjust paths if your project is located elsewhere.
-
-```
-customvpn/
-├── certs/
-│   ├── server.crt         # Server’s self-signed certificate
-│   └── server.key         # Server’s private key
-├── server.py               # VPN server implementation
-└── client.py               # VPN client implementation
-```
-
-* **`certs/`**
-
-  * Contains TLS certificate and key used by `server.py`.
-  * If you enable verification on the client, place a copy of `server.crt` in a similarly named folder on the client side.
-
-* **`server.py`**
-
-  * Configures the TUN interface, enables routing/NAT, listens for a TLS‐wrapped TCP connection, and forwards packets bidirectionally between TUN and the TLS socket.
-
-* **`client.py`**
-
-  * Configures its own TUN interface, connects to the server over TLS, and forwards packets bidirectionally between TUN and the TLS socket.
 
 ---
 
@@ -383,19 +355,3 @@ When you’re done testing or shutting down:
    ```
 
 ---
-
-## Summary
-
-You now have a working, minimal VPN:
-
-* **Server**: Listens on TLS port 8443, routes traffic from the client’s TUN interface out to the internet, and returns replies back through the encrypted tunnel.
-* **Client**: Creates its own TUN interface, sends raw IP packets over a TLS‐protected TCP connection to the server, and receives packets back for local injection.
-
-This implementation is a **proof of concept**. For production usage, consider:
-
-* Adding mutual TLS (client certificates).
-* Supporting multiple clients (unique IP assignments, separate threads or a shared TUN with packet demultiplexing).
-* Moving from TLS-over-TCP to DTLS-over-UDP for lower latency.
-* Deploying a proper PKI or CA infrastructure rather than self-signed certificates.
-
-Enjoy experimenting and learning about low-level networking, encryption, and virtual interfaces!
